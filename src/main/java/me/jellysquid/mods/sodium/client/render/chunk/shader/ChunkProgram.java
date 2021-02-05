@@ -22,6 +22,7 @@ public abstract class ChunkProgram extends GlProgram {
     private final int uTextureScale;
     private final int uBlockTex;
     private final int uLightTex;
+    private final int uDepthTex;
 
     // The fog shader component used by this program in order to setup the appropriate GL state
     private final ChunkShaderFogComponent fogShader;
@@ -36,6 +37,14 @@ public abstract class ChunkProgram extends GlProgram {
         this.uModelScale = this.getUniformLocation("u_ModelScale");
         this.uTextureScale = this.getUniformLocation("u_TextureScale");
 
+        int depthTex;
+        try {
+            depthTex = this.getUniformLocation("u_DepthTex");
+        } catch (NullPointerException e) {
+            depthTex = -1;
+        }
+        this.uDepthTex = depthTex;
+
         this.fogShader = fogShaderFunction.apply(this);
     }
 
@@ -43,6 +52,9 @@ public abstract class ChunkProgram extends GlProgram {
         GL20.glUniform1i(this.uBlockTex, 0);
         GL20.glUniform1i(this.uLightTex, 2);
 
+        if (this.uDepthTex != -1) {
+            GL20.glUniform1i(this.uDepthTex, 5);
+        }
         GL20.glUniform3f(this.uModelScale, modelScale, modelScale, modelScale);
         GL20.glUniform2f(this.uTextureScale, textureScale, textureScale);
 
